@@ -5,23 +5,31 @@ import ColorSchemeToggle from "../../components/Chat/ColorSchemeToggle";
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import GoogleIcon from './GoogleIcon';
 import { useAuthRegisterMutation } from "../../api/authService";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => { 
+  const navigate = useNavigate();
 
   const [ authentication ] = useAuthRegisterMutation();
+  const AuthUser = localStorage.getItem('AuthUser');
+  useEffect(() => {
+    if(AuthUser) {
+      navigate('/chat');
+    }
+  },[AuthUser])
 
   const signInWithGoogle = async () => {
     try {
-      const details = await signInWithPopup(auth, googleProvider); 
+      const details = await signInWithPopup(auth, googleProvider);
       const { accessToken, displayName, email, phoneNumber, photoURL, uid } = details.user as any;
       const AuthUser = { accessToken, displayName, email, phoneNumber, photoURL, uid }
       localStorage.setItem('AuthUser', JSON.stringify(AuthUser))
+
       const signin = await authentication(details.user);
-      console.log(signin)
       if(signin) {
 
       }
-      
     } catch (err){
       console.error(err);
     }

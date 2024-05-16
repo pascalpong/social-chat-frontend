@@ -5,6 +5,9 @@ import Sidebar from "./Sidebar";
 
 
 const Chat = () => {
+
+    
+
     return (
         <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
             <Sidebar />

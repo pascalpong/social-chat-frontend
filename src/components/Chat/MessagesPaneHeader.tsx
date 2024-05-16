@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from '@mui/joy/Avatar';
 import Button from '@mui/joy/Button';
 import Chip from '@mui/joy/Chip';
@@ -11,13 +11,33 @@ import PhoneInTalkRoundedIcon from '@mui/icons-material/PhoneInTalkRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import { UserProps } from './types';
 import { toggleMessagesPane } from '../../utils';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../service/Firebase';
+import { useNavigate } from 'react-router-dom';
+
 
 type MessagesPaneHeaderProps = {
   sender: UserProps;
 };
 
-export default function MessagesPaneHeader(props: MessagesPaneHeaderProps) {
+const AuthUser = localStorage.getItem('AuthUser') as null | string;
+
+export default function MessagesPaneHeader(props: MessagesPaneHeaderProps, authUser: string) {
+  const navigate = useNavigate();
+  const [ user, setUser ] = useState(AuthUser)
   const { sender } = props;
+
+  useEffect(() => {
+    if(!user){
+      // navigate('/')
+    }
+  },[user])
+
+  const toSignOut = async () => {
+    await signOut(auth);
+    localStorage.removeItem('AuthUser');
+  }
+
   return (
     <Stack
       direction="row"
@@ -98,6 +118,18 @@ export default function MessagesPaneHeader(props: MessagesPaneHeaderProps) {
         <IconButton size="sm" variant="plain" color="neutral">
           <MoreVertRoundedIcon />
         </IconButton>
+        <Button
+          startDecorator={<PhoneInTalkRoundedIcon />}
+          color="neutral"
+          variant="outlined"
+          size="sm"
+          onClick={() => toSignOut()}
+          sx={{
+            display: { xs: 'none', md: 'inline-flex' },
+          }}
+        >
+          Sign out
+        </Button>
       </Stack>
     </Stack>
   );
