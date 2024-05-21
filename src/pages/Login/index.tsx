@@ -6,13 +6,15 @@ import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import GoogleIcon from './GoogleIcon';
 import { useAuthRegisterMutation } from "../../api/authService";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Login = () => { 
   const navigate = useNavigate();
 
   const [ authentication ] = useAuthRegisterMutation();
   const AuthUser = localStorage.getItem('AuthUser');
+  const { slug } = useParams();
+
   useEffect(() => {
     if(AuthUser) {
       navigate('/chat');
@@ -26,9 +28,9 @@ const Login = () => {
       const AuthUser = { accessToken, displayName, email, phoneNumber, photoURL, uid }
       localStorage.setItem('AuthUser', JSON.stringify(AuthUser))
 
-      const signin = await authentication(details.user);
+      const signin = await authentication({details: details.user, roomToken: slug});
       if(signin) {
-
+        
       }
     } catch (err){
       console.error(err);
