@@ -6,7 +6,7 @@ export const AuthService = createApi({
     reducerPath: 'AuthService',
     baseQuery: baseQueryWithAuth,
     endpoints: (builder) => ({
-      authRegister: builder.mutation<any, any>({
+      authRegister: builder.mutation({
         query: (body) => ({
           url: '/auth/google',
           method: 'POST',

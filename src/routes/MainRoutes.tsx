@@ -1,50 +1,16 @@
-import { lazy, useEffect, useState } from 'react';
-
-// project import
+import { lazy } from 'react';
 import Loadable from '../components/Loadable';
-import { Navigate } from 'react-router-dom';
 
- 
-const ComponenetChatDefault = Loadable(lazy(() => import('../components/Chat')));
-const PublicChatDefault = Loadable(lazy(() => import('../pages/PublicChat')));
-const ChatList = Loadable(lazy(() => import('../pages/ChatList')));
+const DashboardDefault = Loadable(lazy(() => import('../pages/Dashboard')));
 
-// ==============================|| MAIN ROUTING ||============================== //
-const PrivateRoute = ({
-  element: Element
-}: {
-  element: React.ComponentType;
-}) => {
-  const isLoggedIn = localStorage.getItem('AuthUser') === null ? false : true ;
-  return isLoggedIn ? <Element /> : <Navigate to="/" replace />;
-};
-
-const MainRoutes = {
+const LoginRoutes = {
   path: '/',
   children: [
     {
-      path: 'chat',
-      children: [
-        {
-          path: '',
-          element: <PrivateRoute element={ChatList} />,
-        },
-        {
-          path: ':slug',
-          element: <PrivateRoute element={PublicChatDefault} />
-        }
-      ]
-    },
-    {
-      path: 'all',
-      children: [
-        {
-          path: 'component',
-          element: <ComponenetChatDefault />
-        }
-      ]
-    },
+      path: 'dashboard',
+      element: <DashboardDefault />
+    }
   ]
 };
 
-export default MainRoutes;
+export default LoginRoutes;

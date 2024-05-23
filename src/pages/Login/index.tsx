@@ -1,8 +1,6 @@
-import { Box, Button, CssBaseline, CssVarsProvider, GlobalStyles, IconButton, Stack, Typography } from "@mui/joy";
+import { Box, Button, CssBaseline, CssVarsProvider, GlobalStyles, Stack, Typography } from "@mui/joy";
 import { auth , googleProvider} from "../../service/Firebase";
 import { signInWithPopup } from "firebase/auth";
-import ColorSchemeToggle from "../../components/Chat/ColorSchemeToggle";
-import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import GoogleIcon from './GoogleIcon';
 import { useAuthRegisterMutation } from "../../api/authService";
 import { useEffect } from "react";
@@ -12,25 +10,22 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [ authentication ] = useAuthRegisterMutation();
-  const AuthUser = localStorage.getItem('AuthUser');
+  const tokens = localStorage.getItem('tokens');
   const { slug } = useParams();
 
   useEffect(() => {
-    if(AuthUser) {
-      navigate('/chat');
+    if(tokens) {
+      navigate('/dashboard');
     }
-  },[AuthUser])
+  },[tokens])
 
   const signInWithGoogle = async () => {
     try {
       const details = await signInWithPopup(auth, googleProvider);
-      const { accessToken, displayName, email, phoneNumber, photoURL, uid } = details.user as any;
-      const AuthUser = { accessToken, displayName, email, phoneNumber, photoURL, uid }
-      localStorage.setItem('AuthUser', JSON.stringify(AuthUser))
-
-      const signin = await authentication({details: details.user, roomToken: slug});
-      if(signin) {
-        
+      const signin = await authentication({details: {...details.user, type: 'admin'}});
+      if(signin.data) {
+        localStorage.setItem('tokens', JSON.stringify(signin.data.tokens));
+        navigate('/dashboard');
       }
     } catch (err){
       console.error(err);
@@ -82,12 +77,8 @@ const Login = () => {
             }}
           >
             <Box sx={{ gap: 2, display: 'flex', alignItems: 'center' }}>
-              <IconButton variant="soft" color="primary" size="sm">
-                <BadgeRoundedIcon />
-              </IconButton>
               <Typography level="title-lg">Company logo</Typography>
             </Box>
-            <ColorSchemeToggle />
           </Box>
           <Box
             component="main"
