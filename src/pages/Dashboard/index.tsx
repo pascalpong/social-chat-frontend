@@ -1,79 +1,51 @@
-import { CssVarsProvider } from '@mui/joy/styles';
-import CssBaseline from '@mui/joy/CssBaseline';
-import Box from '@mui/joy/Box';
-import Stack from '@mui/joy/Stack';
-
-import NavBar from './components/NavBar';
-import RentalCard from './components/RentalCard';
+import NavBar from './items/NavBar';
 import Filters from './components/Filters';
-import Pagination from './components/Pagination'; 
 import CreateRoom from './items/CreateRoom';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CardImg from './items/CardImg';
+import { Box, Grid, Stack } from '@mui/material';
 
 
 const Dashboard = () => {
   const navigate = useNavigate()
-  const tokens = localStorage.getItem('tokens');
+  const accessToken = localStorage.getItem('accessToken');
   useEffect(() => {
-    if(!tokens) {
+    if(!accessToken) {
       navigate('/')
     }
-  },[tokens])
+  },[accessToken])
 
-    return (
-        <CssVarsProvider disableTransitionOnChange>
-        <CssBaseline />
-        <NavBar />
-        <Box
-          component="main"
-          sx={{
-            height: 'calc(100vh - 55px)',
-            display: 'grid',
-            gridTemplateColumns: { xs: 'auto', md: 'auto' },
-            gridTemplateRows: 'auto ',
-          }}
-        >
-          <Stack
-            sx={{
-              backgroundColor: 'background.surface',
-              px: { xs: 2, md: 4 },
-              py: 2,
-              borderBottom: '1px solid',
-              borderColor: 'divider',
-            }}
+  return (
+    <>
+    <NavBar />
+      <Box
+        component="main"
+        sx={{
+          height: 'calc(100vh - 55px)',
+          display: 'grid',
+          gridTemplateColumns: { xs: 'auto', md: 'auto' },
+          gridTemplateRows: 'auto ',
+        }}
+      > 
+        <Stack spacing={2} sx={{ px: { xs: 2, md: 4 }, pt: 2, minHeight: 0 }}>
+          <Filters />
+          <Grid
+            container
+            spacing={{ xs: 1, md: 3 }}
+            columns={12}
           >
-          </Stack>
-          <Box
-            sx={{
-              gridRow: 'span 3',
-              display: { xs: 'none', md: 'flex' },
-              backgroundColor: 'background.level1',
-              backgroundSize: 'cover',
-            }}
-          />
-          <Stack spacing={2} sx={{ px: { xs: 2, md: 4 }, pt: 2, minHeight: 0 }}>
-            <Filters />
-            <CreateRoom />
-            <Stack spacing={2} sx={{ overflow: 'auto' }}>
-              <RentalCard
-                title="Designer NY style loft"
-                category="Entire loft in central business district"
-                liked
-                image="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400"
-              />
-              <RentalCard
-                title="Designer NY style loft"
-                category="Entire loft in central business district"
-                liked
-                image="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400"
-              />
-            </Stack>
-          </Stack>
-          <Pagination />
-        </Box>
-      </CssVarsProvider>
-    )
+            {Array.from(Array(13)).map((_, index) => (
+            <Grid xs={4} key={index}>
+              <CardImg img={"https://images.unsplash.com/photo-1502657877623-f66bf489d236?auto=format&fit=crop&w=800" } />
+            </Grid>
+            ))}
+          </Grid>
+          <CreateRoom />
+        </Stack>
+      </Box>
+    </>
+  )
 
 }
 

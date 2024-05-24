@@ -13,7 +13,21 @@ export const AuthService = createApi({
           body
         })
       }),
+      verifyLogin: builder.mutation({
+        query: (body) => ({
+          url: '/auth/verify-login',
+          method: 'POST',
+          body
+        })
+      }),
+      changeDisplayDetails: builder.mutation({
+        query: (body) => ({
+          url:'/auth/change-display',
+          method: 'POST',
+          body
+        })
+      })
     })
 });
   
-export const { useAuthRegisterMutation } = AuthService;
+export const { useAuthRegisterMutation, useChangeDisplayDetailsMutation, useVerifyLoginMutation } = AuthService;

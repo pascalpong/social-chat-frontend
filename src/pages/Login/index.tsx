@@ -2,30 +2,63 @@ import { Box, Button, CssBaseline, CssVarsProvider, GlobalStyles, Stack, Typogra
 import { auth , googleProvider} from "../../service/Firebase";
 import { signInWithPopup } from "firebase/auth";
 import GoogleIcon from './GoogleIcon';
-import { useAuthRegisterMutation } from "../../api/authService";
-import { useEffect } from "react";
+import { useAuthRegisterMutation, useVerifyLoginMutation } from "../../api/authService";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import DisplayModal from "./DisplayModal";
 
 const Login = () => { 
   const navigate = useNavigate();
 
-  const [ authentication ] = useAuthRegisterMutation();
-  const tokens = localStorage.getItem('tokens');
-  const { slug } = useParams();
+  const [ open, setOpen ] = useState<boolean>(false)
+  const onClose = () => {
+    setOpen(false);
+    toDashboard()
+  } 
 
-  useEffect(() => {
-    if(tokens) {
-      navigate('/dashboard');
+  const [ authentication ] = useAuthRegisterMutation();
+  const [ displayName, setDisplayName ] = useState<string>('')
+  const accessToken = localStorage.getItem('accessToken');
+  const [ verifyLogin ] = useVerifyLoginMutation();
+  const doVerify = async () => {
+    try {
+      const result = await verifyLogin({});
+      return result;
+    } catch (err) {
+      console.error('Verification failed:', err);
+      return null;
     }
-  },[tokens])
+  }
+  useEffect(() => {
+    if(accessToken) {
+      const verify: any = doVerify()
+      const user = JSON.parse(localStorage.getItem('user') as string)
+      if(verify) {
+        if(user.displayName === null) {
+          setOpen(true);
+        } else {
+          toDashboard()
+        }
+      }
+      return;
+    }
+  },[accessToken])
+
+  const toDashboard = () => {
+    navigate('/dashboard');
+  }
 
   const signInWithGoogle = async () => {
     try {
       const details = await signInWithPopup(auth, googleProvider);
       const signin = await authentication({details: {...details.user, type: 'admin'}});
       if(signin.data) {
-        localStorage.setItem('tokens', JSON.stringify(signin.data.tokens));
-        navigate('/dashboard');
+        localStorage.setItem('accessToken', signin.data.accessToken);
+        localStorage.setItem('user', JSON.stringify(signin.data));
+        if(signin.data.displayName === null) {
+          setDisplayName(signin.data.details)
+          setOpen(true);
+        }
       }
     } catch (err){
       console.error(err);
@@ -122,6 +155,7 @@ const Login = () => {
           </Box>
         </Box>
       </Box>
+      <DisplayModal open={open} displayName={displayName} onClose={onClose}/>
       <Box
         sx={(theme) => ({
           height: '100%',

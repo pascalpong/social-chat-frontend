@@ -6,6 +6,8 @@ import { store } from './store'
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ThemeProvider } from '@mui/material';
+import theme from './theme';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -13,11 +15,13 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
+    <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Provider store={store}>
           <App />
         </Provider>
       </BrowserRouter>
+    </ThemeProvider>,
   </React.StrictMode>
 );
 
